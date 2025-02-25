@@ -1,15 +1,15 @@
 import time
 from bot_utils import *
 
+init_serial()
+
 while True:
-    if not running:
+    if not is_running:
         time.sleep(0.1)
         continue 
     if is_game_window_active():
-        if is_monster_alive:
-            time.sleep(random_delay1) #25ms
+        if is_alive_monster_in_target():
+            actions_delay(0.025,0.036)
             attack()
-            time.sleep(random_delay1) #25ms
         else:
-            time.sleep(random_delay1) #25ms
             get_next_target()

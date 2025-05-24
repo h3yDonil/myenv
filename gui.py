@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, font
 import bot_utils
 import keyboard
+import bot
+
 
 class BotGUI:
     def __init__(self, master):
@@ -25,12 +27,13 @@ class BotGUI:
 
     def update_button_text(self):
         if bot_utils.running:
-            self.toggle_button.configure(text="running")
+            self.toggle_button.configure(text="bot working")
         else:
-            self.toggle_button.configure(text="paused")
+            self.toggle_button.configure(text="bot paused")
 
             
 if __name__ == '__main__':
     root = tk.Tk()
     gui = BotGUI(root)
     root.mainloop()
+    bot.start_bot_thread()

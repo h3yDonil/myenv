@@ -1,7 +1,6 @@
 import serial
 import time
 from PIL import ImageGrab
-import keyboard
 import pygetwindow as gw
 import config
 

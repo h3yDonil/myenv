@@ -18,6 +18,8 @@ def run_bot():
             if is_alive_monster_in_target():
                 time.sleep(uniform(0.025, 0.036))
                 attack()
+                time.sleep(uniform(0.32, 0.55))
+                print('attacking')
             else:
                 get_next_target()
                 time.sleep(uniform(0.05, 0.1))

@@ -7,7 +7,7 @@ import config
 # Initialize the serial connection and pause execution
 # for 2 second to allow the serial connection to establish properly
 
-#ser = serial.Serial(config.COM_PORT, config.BAUD_RATE)
+ser = serial.Serial(config.COM_PORT, config.BAUD_RATE)
 time.sleep(2)
 
 running = False
@@ -44,7 +44,6 @@ def is_alive_monster_in_target():
 def attack():
     """Send to serial port byte representation for specified characters """
     ser.write(b'3')
-    ser.write(b'2')
 
 
 def get_next_target():

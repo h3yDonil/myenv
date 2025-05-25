@@ -9,8 +9,9 @@ class BotGUI:
     def __init__(self, master):
         self.master = master
         master.title("Radio station player")
-        master.geometry('800x500')
-        
+        master.geometry('300x150')
+        master.attributes('-topmost', True)
+
         # Title label
         self.label = ttk.Label(master, text="Control panel")
         self.label.pack(pady=10)
@@ -27,13 +28,13 @@ class BotGUI:
 
     def update_button_text(self):
         if bot_utils.running:
-            self.toggle_button.configure(text="bot working")
+            self.toggle_button.configure(text="Bot working")
         else:
-            self.toggle_button.configure(text="bot paused")
+            self.toggle_button.configure(text="Bot paused")
 
             
 if __name__ == '__main__':
     root = tk.Tk()
     gui = BotGUI(root)
-    root.mainloop()
     bot.start_bot_thread()
+    root.mainloop()

@@ -1,16 +1,63 @@
-import serial
-import time
+from serial_handler import ArduinoManager
 from PIL import ImageGrab
 import pygetwindow as gw
 import config
+import time
+import threading
 
-# Initialize the serial connection and pause execution
-# for 2 second to allow the serial connection to establish properly
 
-ser = serial.Serial(config.COM_PORT, config.BAUD_RATE)
-time.sleep(2)
+class TargetManager:
+    def __init__(self):
+        self.last_target_change_time = 0  # When target was changed last time
+        self.target_timeout = 20  # Seconds to wait before changing target
+        # if target is still alive
+        self.target_fullhp_timeout = 5  # Seconds to wait before changing target
+        # if hp remains full
+        self.current_target_stale = False  # Flag for tracking target state
+
+    def start_target_scanning(self):
+        """Mainloop for continuously checking and changing targets"""
+        while True:
+            if self._should_change_target():
+                self.get_next_target()
+
+    def is_alive_monster_in_target(self):
+        """Check if monster is alive by comparing last left pixel color"""
+        return self.get_pixel_color(
+            *config.LEFT_HP_PIXEL_COORDINATES) == config.LEFT_HP_PIXEL_COLOR
+
+    def is_target_hp_full(self):
+        """Check if monster's hp is full comparing last right pixel color"""
+        return self.get_pixel_color(
+            *config.RIGHT_HP_PIXEL_COORDINATES) == config.RIGHT_HP_PIXEL_COLOR
+
+    def get_pixel_color(self, x, y):
+        """Get the color of the pixel at the specified coordinates"""
+        screen = ImageGrab.grab()
+        return screen.getpixel((x, y))
+
+    def get_next_target(self):
+        """Send to serial port byte representation for specified characters """
+        arduino_manager.write_data(b'4')
+        self.last_target_change_time = time.time()
+
+    def _should_change_target(self):
+        current_time = time.time()
+        time_since_last_target_change = current_time - self.last_target_change_time
+
+        hp_full_for_too_long = (self.is_target_hp_full and
+                                time_since_last_target_change >= self.target_fullhp_timeout)
+
+        absolute_timeout_reached = time_since_last_target_change >= self.target_timeout
+
+        self.current_target_stale = hp_full_for_too_long or absolute_timeout_reached
+
+        return self.current_target_stale
+
 
 running = False
+target_manager = TargetManager()
+arduino_manager = ArduinoManager()
 
 
 def toggle_running_state():
@@ -24,28 +71,12 @@ def toggle_running_state():
     print(f'page down pressed, running = {running}')
 
 
-def get_pixel_color(x, y):
-    """Get the color of the pixel at the specified coordinates"""
-    screen = ImageGrab.grab()
-    return screen.getpixel((x, y))
-
-
 def is_game_window_active():
     """Check if the target game windows is currently active"""
     active_window = gw.getActiveWindow()
     return active_window and config.TARGET_WINDOW_TITLE in active_window.title
 
 
-def is_alive_monster_in_target():
-    """Check if monster is alive by comparing pixel color"""
-    return get_pixel_color(*config.PIXEL_COORDINATES) == config.HP_PIXEL_COLOR
-
-
 def attack():
     """Send to serial port byte representation for specified characters """
-    ser.write(b'3')
-
-
-def get_next_target():
-    """Send to serial port byte representation for specified characters """
-    ser.write(b'4')
+    arduino_manager.write_data(b'3')

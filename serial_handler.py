@@ -20,4 +20,4 @@ class ArduinoManager:
             self.connected = False
     
     def write_data(self, data: bytes):
-        self.ser.write(data) # type: ignore
+        self.ser.write(data) 

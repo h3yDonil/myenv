@@ -9,7 +9,7 @@ class BotGUI:
     def __init__(self, master):
         self.master = master
         master.title("Radio station player")
-        master.geometry('400x250')
+        master.geometry('250x120')
         master.attributes('-topmost', True)
 
         # Title label
@@ -28,8 +28,10 @@ class BotGUI:
         self.update_connection_status()
 
         # 'Check connection' button
-        self.check_connection_button = ttk.Button(master, text='Check arduino connection',
-                                                  command=bot_utils.arduino_manager.init_serial)
+        self.check_connection_button = ttk.Button(
+                                            master=master,
+                                            text='Check arduino connection',
+                                            command=bot_utils.arduino_manager.init_serial)
         self.check_connection_button.pack()
 
     def toggle_bot(self):
